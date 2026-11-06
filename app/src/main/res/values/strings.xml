@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">Practica Servicios</string>
+    <string name="app_name">[MiW]Practica APIs</string>
+
+    <string name="signed_in">Sesión iniciada!</string>
+    <string name="signed_out">Sesión cerrada!</string>
+    <string name="signed_cancelled">Inicio de sesión cancelado</string>
+    <string name="txtLogout_button">Cerrar sesión</string>
+    <string name="firebase_user_fmt">Usuario de Firebase: %s (%s)</string>
+    <string name="default_web_client_id" translatable="false">webClientId.apps.googleusercontent.com</string>
+    <string name="txtDeleteUser_button">Borrar usuario</string>
+    <string name="login_title">Inicia sesión</string>
+    <string name="login_google">Iniciar sesión con Google</string>
+    <string name="login_email">Iniciar sesión con email</string>
+    <string name="login_guest">Continuar como invitado</string>
 </resources>

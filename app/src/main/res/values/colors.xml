@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#D5F3D5</color>
+    <color name="colorPrimaryVariant">#CD9BAA</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="statusBarColor">#8DD5C9</color>
+
+    <color name="material_green_50">#E8F5E9</color>
+    <color name="material_green_500">#4CAF50</color>
+    <color name="material_green_700">#388E3C</color>
+    <color name="material_purple_a700">#AA00FF</color>
+    <color name="material_text_grey">#4D4D4D</color>
+    <color name="material_red">#D0021B</color>
+    <color name="material_yellow">#F4B400</color>
 </resources>

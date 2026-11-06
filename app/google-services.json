@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "152866040860",
+    "project_id": "miwpracticaserviciosapi2026",
+    "storage_bucket": "miwpracticaserviciosapi2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152866040860:android:f665273cd9db8942adc3d9",
+        "android_client_info": {
+          "package_name": "es.upm.miw.practicaservicios"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_nT_MPEMLRJs4BhyhrQjOzcHt4rT6j6Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
