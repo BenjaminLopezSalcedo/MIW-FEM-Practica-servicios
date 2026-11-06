@@ -10,20 +10,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 // Firebase
 import com.firebase.ui.auth.AuthMethodPickerLayout;
@@ -39,7 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+public class MainActivity extends AppCompatActivity {
 
     final static String LOG_TAG = "MiW";
 
@@ -49,9 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.logoutButton).setOnClickListener(this);
-        findViewById(R.id.deleteUserButton).setOnClickListener(this);
+        estableceInserciones();
 
+        launchSignIn();
+    }
+
+    private void launchSignIn(){
         // Choose Firebase Authentication providers
         List<AuthUI.IdpConfig> authProviders = Arrays.asList(
                 new AuthUI.IdpConfig.GoogleBuilder().build(),
@@ -110,20 +108,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // ...
             Toast.makeText(this, R.string.signed_cancelled, Toast.LENGTH_SHORT).show();
             Log.e(LOG_TAG, "onSignInResult() CANCELED:" + getString(R.string.signed_cancelled));
-            assert (identityProvider_response != null) && (identityProvider_response.getError() != null);
-            Log.e(LOG_TAG, "ERROR: " + identityProvider_response.getError().getMessage());
+            if (identityProvider_response != null && identityProvider_response.getError() != null) {
+                Log.e(LOG_TAG, "ERROR: " + identityProvider_response.getError().getMessage());
+            }
             finish();
         }
     }
 
     @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        if (id == R.id.logoutButton) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.opcLogout) {
             logout();
-        } else if (id == R.id.deleteUserButton) {
+            return true;
+        } else if (id == R.id.opcDeleteUser) {
             confirmDeleteUser();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void logout() {
@@ -135,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         // Sign out of all social identity providers
                     }
                 });
-        finish();
+        launchSignIn();
     }
 
     private void confirmDeleteUser() {
@@ -147,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
     public void deleteUser() {
-        Log.w(LOG_TAG, getString(R.string.signed_out));
+        Log.w(LOG_TAG, getString(R.string.deleted_user));
         AuthUI.getInstance()
                 .delete(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -156,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         // ...
                     }
                 });
-        finish();
+        launchSignIn();
     }
 
     // Establece las inserciones de recortes de pantalla

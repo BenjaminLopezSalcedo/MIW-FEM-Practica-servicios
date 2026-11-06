@@ -12,4 +12,5 @@
     <string name="login_google">Iniciar sesión con Google</string>
     <string name="login_email">Iniciar sesión con email</string>
     <string name="login_guest">Continuar como invitado</string>
+    <string name="deleted_user">Usuario borrado correctamente!</string>
 </resources>
