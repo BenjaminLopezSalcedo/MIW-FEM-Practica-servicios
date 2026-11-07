@@ -30,9 +30,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -100,6 +103,16 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, getString(R.string.firebase_user_fmt, name, email), Toast.LENGTH_LONG).show();
                 Log.i(LOG_TAG, "onSignInResult() " + getString(R.string.firebase_user_fmt, name, email));
                 ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, name, email));
+
+                Map<String, Object> test = new HashMap<>();
+                test.put("mensaje", "hola");
+                test.put("fecha", com.google.firebase.Timestamp.now());
+
+                FirebaseFirestore.getInstance()
+                        .collection("users").document(user.getUid())
+                        .collection("pruebas").add(test)
+                        .addOnSuccessListener(ref -> Log.i(LOG_TAG, "Firestore OK: " + ref.getId()))
+                        .addOnFailureListener(e -> Log.e(LOG_TAG, "Firestore ERROR", e));
             }
         } else {
             // Sign in failed. If IdentityProvider_response is null the user canceled the
