@@ -11,6 +11,8 @@ constraintlayout = "2.2.2"
 firebaseBoMVersion = "35.1.0"
 firebaseUIAuthVersion = "9.1.1"
 firebaseAuth = "25.0.0"
+retrofitVersion = "3.0.0"
+gsonVersion = "2.14.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,6 +26,9 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBoMVersion" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUIAuthVersion" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofitVersion" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

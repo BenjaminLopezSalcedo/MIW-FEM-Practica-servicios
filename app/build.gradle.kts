@@ -45,6 +45,10 @@ dependencies {
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.firestore)
 
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
