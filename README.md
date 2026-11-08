@@ -9,15 +9,16 @@ Aplicación que consulta los sismos publicados por el USGS y mantiene un histori
 ## Funcionalidades
 
 - **Registro y autenticación de usuarios** con email/contraseña mediante Firebase Authentication (FirebaseUI).
-  - El UID del usuario identifica sus datos en Firestore.
-  - Política de contraseñas activada en Firebase: mínimo 6 caracteres, con mayúscula, minúscula y número.
-  - FirebaseUI muestra un error si la contraseña no la cumple.
+    - El UID del usuario identifica sus datos en Firestore.
+    - Política de contraseñas activada en Firebase: mínimo 6 caracteres, con mayúscula, minúscula y número.
+    - FirebaseUI muestra un error si la contraseña no la cumple.
+    - También permite entrar como invitado (acceso anónimo); si cierra sesión, ese usuario no se puede recuperar.
 
 - **Consulta a la API del USGS** con Retrofit y Gson.
-  - Los filtros de zona y magnitud son opcionales: si valen `null`, Retrofit no los envía y la consulta es global.
-  - El botón de consulta pide los sismos de la última hora en todo el mundo.
-  - Se piden como máximo 500 eventos y la llamada es asíncrona.
-  - Se descartan los eventos que no son terremotos (p. ej. explosiones de cantera) y los que no tienen magnitud.
+    - Los filtros de zona y magnitud son opcionales: si valen `null`, Retrofit no los envía y la consulta es global.
+    - El botón de consulta pide los sismos de la última hora en todo el mundo.
+    - Se piden como máximo 500 eventos y la llamada es asíncrona.
+    - Se descartan los eventos que no son terremotos (p. ej. explosiones de cantera) y los que no tienen magnitud.
 
 - **Persistencia en Cloud Firestore** de cada consulta, en `users/{uid}/consultas/{id}`.
     - Cada documento guarda: datos de la petición (`info`), estadísticas y lista de sismos.
@@ -70,7 +71,7 @@ users/{uid}/consultas/{idDocumento}
         └─ prof
 ```
 
-- [ i ] representa cada elemento de la lista.
+- `[ i ]` representa cada elemento de la lista.
 - `fechaConsulta`: la pone el servidor de Firestore, no el móvil.
 - `area`: `null` si la consulta es global; si no, contiene `lat`, `lon` y `radioKm`.
 - `fechaInicio` / `fechaFin`: texto en UTC, que es como USGS interpreta las fechas.
@@ -91,7 +92,7 @@ users/{uid}/consultas/{idDocumento}
 
 ## API utilizada
 
-- [API Usgs](https://earthquake.usgs.gov/fdsnws/event/1/)
+- [API USGS](https://earthquake.usgs.gov/fdsnws/event/1/)
 
 ## Autor
 
