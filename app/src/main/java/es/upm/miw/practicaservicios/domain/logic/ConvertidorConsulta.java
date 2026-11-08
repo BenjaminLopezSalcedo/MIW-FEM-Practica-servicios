@@ -3,11 +3,9 @@ package es.upm.miw.practicaservicios.domain.logic;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import es.upm.miw.practicaservicios.R;
 import es.upm.miw.practicaservicios.api.models.Feature;
@@ -18,7 +16,7 @@ import es.upm.miw.practicaservicios.data.Sismo;
 
 public class ConvertidorConsulta {
 
-    public static List<Sismo> extraerSismos(UsgsResponse respuesta){
+    public static List<Sismo> extractSismos(UsgsResponse respuesta){
         List<Sismo> sismos = new ArrayList<>();
         if(respuesta != null){
             for (Feature f : respuesta.getFeatures()) {
@@ -47,7 +45,7 @@ public class ConvertidorConsulta {
         return sismos;
     }
 
-    public static Estadisticas extraerEstadisticas(Context c, List<Sismo> sismos){
+    public static Estadisticas extractEstadisticas(Context c, List<Sismo> sismos){
         Estadisticas estadisticas = new Estadisticas();
 
         String micro = c.getString(R.string.range_micro);

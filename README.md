@@ -4,20 +4,94 @@ Aplicación Android desarrollada para la asignatura de MIW (FEM). Utiliza servic
 
 ## Descripción
 
-TO DO
+Aplicación que consulta los sismos publicados por el USGS y mantiene un historial de consultas por usuario. Cada consulta guarda su lista de sismos y las estadísticas calculadas sobre ellos.
 
 ## Funcionalidades
 
 - **Registro y autenticación de usuarios** con email/contraseña mediante Firebase Authentication (FirebaseUI).
-- **Consulta a una API externa** ([nombre de la API]) con [Retrofit / Volley].
-- **Persistencia de datos** de las consultas en [Firebase Realtime Database / Cloud Firestore / base de datos local].
+  - El UID del usuario identifica sus datos en Firestore.
+  - Política de contraseñas activada en Firebase: mínimo 6 caracteres, con mayúscula, minúscula y número.
+  - FirebaseUI muestra un error si la contraseña no la cumple.
+
+- **Consulta a la API del USGS** con Retrofit y Gson.
+  - Los filtros de zona y magnitud son opcionales: si valen `null`, Retrofit no los envía y la consulta es global.
+  - El botón de consulta pide los sismos de la última hora en todo el mundo.
+  - Se piden como máximo 500 eventos y la llamada es asíncrona.
+  - Se descartan los eventos que no son terremotos (p. ej. explosiones de cantera) y los que no tienen magnitud.
+
+- **Persistencia en Cloud Firestore** de cada consulta, en `users/{uid}/consultas/{id}`.
+    - Cada documento guarda: datos de la petición (`info`), estadísticas y lista de sismos.
+    - Estadísticas: total, magnitud máxima y media, profundidad media, evento más fuerte y reparto por rangos de magnitud.
+    - Se guardan como máximo los 100 sismos más fuertes, aunque las estadísticas se calculan sobre todos los recibidos.
+    - Se guarda lo que el usuario vio en ese momento, porque USGS revisa sus datos con el tiempo.
+    - Reglas de seguridad: cada usuario solo accede a sus propios datos.
+
+- **Historial y detalle**: la pantalla principal lista las últimas consultas; al pulsar una se abre el detalle con el resumen y la lista de sismos, leídos de Firestore sin volver a llamar a la API.
+
+## Estructura almacenada en Cloud Firestore
+
+Ruta: `users/{uid}/consultas/{idDocumento}`
+
+```
+users/{uid}/consultas/{idDocumento}
+├── info
+│   ├── fechaConsulta
+│   ├── zonaNombre
+│   ├── area
+│   │   ├─ lat
+│   │   ├─ lon
+│   │   └─ radioKm
+│   ├── fechaInicio
+│   ├── fechaFin
+│   └── magMin
+├── estadisticas
+│   ├── numTotalSismos
+│   ├── guardados
+│   ├── truncado
+│   ├── magMax
+│   ├── magMedia
+│   ├── profMedia
+│   ├── eventoMaxId
+│   ├── eventoMaxLugar
+│   └── rangos
+│       ├─ fuerte
+│       ├─ moderado
+│       ├─ ligero
+│       ├─ menor
+│       └─ micro
+└── sismos [ máx. 100 ]
+    └── [i]
+        ├─ id
+        ├─ mag
+        ├─ lugar
+        ├─ tiempo
+        ├─ lat
+        ├─ lon
+        └─ prof
+```
+
+- [ i ] representa cada elemento de la lista.
+- `fechaConsulta`: la pone el servidor de Firestore, no el móvil.
+- `area`: `null` si la consulta es global; si no, contiene `lat`, `lon` y `radioKm`.
+- `fechaInicio` / `fechaFin`: texto en UTC, que es como USGS interpreta las fechas.
+- `magMin`: `null` si no se aplicó filtro de magnitud.
+- `guardados`: puede ser menor que `numTotalSismos`, porque la lista guarda como máximo 100 sismos.
+- `truncado`: `true` si la API alcanzó el límite de 500 eventos, así que puede haber más sismos de los contados.
+- `magMax`, `magMedia`, `profMedia`, `eventoMaxId` y `eventoMaxLugar`: son `null` si la consulta no devolvió sismos.
+- `rangos`: sismos por rango de magnitud (micro < 2, menor < 4, ligero < 5, moderado < 6, fuerte ≥ 6). Las claves se guardan con el texto en el idioma del dispositivo.
+- `tiempo`: milisegundos Unix (UTC).
+- `prof`: profundidad en km.
 
 ## Tecnologías
 
 - Java / Android
-- Firebase Authentication
-- [Retrofit / Volley]
-- [Firebase Realtime Database / Cloud Firestore]
+- Firebase Authentication (FirebaseUI)
+- Retrofit y Gson
+- Cloud Firestore
+
+## API utilizada
+
+- [API Usgs](https://earthquake.usgs.gov/fdsnws/event/1/)
 
 ## Autor
 

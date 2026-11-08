@@ -1,7 +1,7 @@
 package es.upm.miw.practicaservicios.ui.activities;
 
-import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extraerEstadisticas;
-import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extraerSismos;
+import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extractEstadisticas;
+import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extractSismos;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -56,6 +56,8 @@ import es.upm.miw.practicaservicios.data.ConsultaInfo;
 import es.upm.miw.practicaservicios.data.ConsultaUsgs;
 import es.upm.miw.practicaservicios.data.Estadisticas;
 import es.upm.miw.practicaservicios.data.Sismo;
+import es.upm.miw.practicaservicios.domain.logic.ConsultaService;
+import es.upm.miw.practicaservicios.domain.repository.ConsultaRepository;
 import es.upm.miw.practicaservicios.ui.fragments.DeleteUserAlertDialog;
 import es.upm.miw.practicaservicios.ui.viewmodel.ConsultaAdapter;
 import retrofit2.Call;
@@ -78,6 +80,8 @@ public class MainActivity extends AppCompatActivity
     private TextView tvEmpty;
 
     private FloatingActionButton fab;
+
+    private ConsultaService consultaService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +108,11 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(v -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
-                guardarConsultaUltimaHora(user);
+                realizarConsulta(user, ConsultaService.globalLastHourInfo());
             }
         });
+
+        consultaService = new ConsultaService(this);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -215,13 +221,50 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+    private void realizarConsulta(FirebaseUser user, ConsultaInfo info) {
+        fab.setEnabled(false);
+
+        consultaService.askForSismos(info, new Callback<UsgsResponse>() {
+            @Override
+            public void onResponse(Call<UsgsResponse> call, Response<UsgsResponse> response) {
+                UsgsResponse usgsResponse = response.body();
+                if (usgsResponse == null) {
+                    Log.w(LOG_TAG, "Respuesta no válida: " + response.code());
+                    errorConsulta();
+                    return;
+                }
+
+                ConsultaUsgs consulta = consultaService.buildConsulta(info, usgsResponse);
+
+                new ConsultaRepository(user).save(consulta)
+                        .addOnSuccessListener(ref -> {
+                            Log.i(LOG_TAG, "Consulta guardada: " + ref.getId());
+                            Toast.makeText(MainActivity.this, R.string.query_saved, Toast.LENGTH_SHORT).show();
+                            cargarHistorial(user);
+                            fab.setEnabled(true);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(LOG_TAG, "Error al guardar", e);
+                            errorConsulta();
+                        });
+            }
+
+            @Override
+            public void onFailure(Call<UsgsResponse> call, Throwable t) {
+                Log.e(LOG_TAG, "Error de red: " + t.getMessage());
+                errorConsulta();
+            }
+        });
+    }
+
+    private void errorConsulta() {
+        Toast.makeText(this, R.string.query_error, Toast.LENGTH_SHORT).show();
+        fab.setEnabled(true);
+    }
+
     private void cargarHistorial(FirebaseUser user) {
-        FirebaseFirestore.getInstance()
-                .collection("users").document(user.getUid())
-                .collection("consultas")
-                .orderBy("info.fechaConsulta", Query.Direction.DESCENDING)
-                .limit(20)
-                .get()
+        new ConsultaRepository(user).last(20)
                 .addOnSuccessListener(snapshot -> {
                     List<ConsultaUsgs> consultas = snapshot.toObjects(
                             ConsultaUsgs.class, DocumentSnapshot.ServerTimestampBehavior.ESTIMATE);
@@ -233,82 +276,6 @@ public class MainActivity extends AppCompatActivity
                     Log.e(LOG_TAG, "Error al leer el historial", e);
                     tvEmpty.setVisibility(View.VISIBLE);
                 });
-    }
-    private void guardarConsultaUltimaHora(FirebaseUser user) {
-        fab.setEnabled(false);
-
-        DateTimeFormatter fmt = DateTimeFormatter
-                .ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
-        Instant ahora = Instant.now();
-        final String desde = fmt.format(ahora.minus(1, ChronoUnit.HOURS));
-        final String hasta = fmt.format(ahora);
-        final Context ctx = getApplicationContext();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        UsgsApiService api = retrofit.create(UsgsApiService.class);
-
-        Call<UsgsResponse> call_async = api.getEarthquakes(
-                "geojson", desde, hasta, null, null, null, null, "time", LIMIT_API);
-
-        call_async.enqueue(new Callback<UsgsResponse>() {
-            @Override
-            public void onResponse(Call<UsgsResponse> call, Response<UsgsResponse> response) {
-                UsgsResponse usgsResponse = response.body();
-                if (usgsResponse == null) {
-                    Log.w(LOG_TAG, "Respuesta no válida: " + response.code());
-                    Toast.makeText(MainActivity.this, R.string.query_error, Toast.LENGTH_SHORT).show();
-                    fab.setEnabled(true);
-                    return;
-                }
-
-                List<Sismo> todos = extraerSismos(usgsResponse);
-                Estadisticas estadisticas = extraerEstadisticas(ctx,todos);
-                estadisticas.setTruncado(usgsResponse.getFeatures().size() >= LIMIT_API);
-
-                todos.sort((a, b) -> Double.compare(b.getMag(), a.getMag()));
-                List<Sismo> guardar = todos.size() > MAX_SISMOS
-                        ? new ArrayList<>(todos.subList(0, MAX_SISMOS)) : todos;
-                estadisticas.setGuardados(guardar.size());
-
-                ConsultaInfo info = new ConsultaInfo();
-                info.setZonaNombre("Global");
-                info.setArea(null);
-                info.setFechaInicio(desde);
-                info.setFechaFin(hasta);
-                info.setMagMin(null);
-
-                ConsultaUsgs consulta = new ConsultaUsgs();
-                consulta.setInfo(info);
-                consulta.setSismos(guardar);
-                consulta.setEstadisticas(estadisticas);
-
-                FirebaseFirestore.getInstance()
-                        .collection("users").document(user.getUid())
-                        .collection("consultas").add(consulta)
-                        .addOnSuccessListener(ref -> {
-                            Log.i(LOG_TAG, "Consulta guardada: " + ref.getId()
-                                    + " (total=" + estadisticas.getNumTotalSismos() + ")");
-                            Toast.makeText(MainActivity.this, R.string.query_saved, Toast.LENGTH_SHORT).show();
-                            cargarHistorial(user);
-                            fab.setEnabled(true);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e(LOG_TAG, "Error al guardar", e);
-                            Toast.makeText(MainActivity.this, R.string.query_error, Toast.LENGTH_SHORT).show();
-                            fab.setEnabled(true);
-                        });
-            }
-
-            @Override
-            public void onFailure(Call<UsgsResponse> call, Throwable t) {
-                Log.e(LOG_TAG, "Error de red: " + t.getMessage());
-                Toast.makeText(MainActivity.this, R.string.query_error, Toast.LENGTH_SHORT).show();
-                fab.setEnabled(true);
-            }
-        });
     }
 
     public void logout() {
