@@ -1,6 +1,6 @@
-package es.upm.miw.practicaservicios;
+package es.upm.miw.practicaservicios.api;
 
-import es.upm.miw.practicaservicios.models.UsgsResponse;
+import es.upm.miw.practicaservicios.api.models.UsgsResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -12,10 +12,10 @@ public interface UsgsApiService {
             @Query("format") String format,
             @Query("starttime") String start,
             @Query("endtime") String end,
-            @Query("minmagnitude") double minMag,
-            @Query("latitude") double lat,
-            @Query("longitude") double lon,
-            @Query("maxradiuskm") double radiusKm,
+            @Query("minmagnitude") Double minMag,    // null = sin filtro
+            @Query("latitude") Double lat,           // null = sin zona
+            @Query("longitude") Double lon,          // null = sin zona
+            @Query("maxradiuskm") Double radiusKm,   // null = sin zona
             @Query("orderby") String orderBy,
             @Query("limit") int limit);
 }

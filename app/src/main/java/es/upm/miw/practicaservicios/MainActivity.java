@@ -37,7 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.upm.miw.practicaservicios.models.UsgsResponse;
+import es.upm.miw.practicaservicios.api.UsgsApiService;
+import es.upm.miw.practicaservicios.api.models.UsgsResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 api = retrofit.create(UsgsApiService.class);
 
                 Call<UsgsResponse> call_async = api.getEarthquakes("geojson", "2026-11-01", "2026-11-07",
-                                4.0, 36.2, 138.2, 500, "time", 500);
+                                4.0, 36.2, 138.2, 500.0, "time", 500);
 
                 call_async.enqueue(new Callback<UsgsResponse>() {
                     @Override

@@ -1,4 +1,4 @@
-package es.upm.miw.practicaservicios.models;
+package es.upm.miw.practicaservicios.api.models;
 
 import javax.annotation.processing.Generated;
 import com.google.gson.annotations.Expose;

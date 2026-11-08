@@ -1,4 +1,4 @@
-package es.upm.miw.practicaservicios.models;
+package es.upm.miw.practicaservicios.api.models;
 
 import java.util.List;
 import javax.annotation.processing.Generated;
