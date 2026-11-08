@@ -27,20 +27,10 @@
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btn_google"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:minHeight="48dp"
-        android:text="@string/login_google"
-        android:textColor="@color/material_text_grey"
-        android:textStyle="bold"
-        app:backgroundTint="@android:color/white"
-        app:cornerRadius="4dp" />
 
     <Button
         android:id="@+id/btn_email"
+        style="@style/FirebaseUI.Button.AccountChooser.EmailButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -49,10 +39,11 @@
         android:textColor="@android:color/white"
         android:textStyle="bold"
         app:backgroundTint="@color/material_red"
-        app:cornerRadius="4dp" />
+        app:cornerRadius="7dp" />
 
     <Button
         android:id="@+id/btn_anonymous"
+        style="@style/FirebaseUI.Button.AccountChooser.AnonymousButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -61,6 +52,6 @@
         android:textColor="@android:color/black"
         android:textStyle="bold"
         app:backgroundTint="@color/material_yellow"
-        app:cornerRadius="4dp" />
+        app:cornerRadius="7dp" />
 
 </LinearLayout>

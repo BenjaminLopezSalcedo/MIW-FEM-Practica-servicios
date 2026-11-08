@@ -23,4 +23,5 @@
     <string name="colTotalEarthquakes">Nº Sismos</string>
     <string name="colLocalization">Localización</string>
     <string name="txtEmptyHistory">No se han realizado busquedas todavía</string>
+    <string name="contentDescAddQuery">Añadir consulta</string>
 </resources>

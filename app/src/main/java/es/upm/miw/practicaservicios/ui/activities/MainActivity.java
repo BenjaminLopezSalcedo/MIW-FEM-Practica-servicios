@@ -1,4 +1,4 @@
-package es.upm.miw.practicaservicios;
+package es.upm.miw.practicaservicios.ui.activities;
 
 import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extraerEstadisticas;
 import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extraerSismos;
@@ -17,12 +17,15 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 // Firebase
 import com.firebase.ui.auth.AuthMethodPickerLayout;
@@ -34,7 +37,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -42,19 +47,16 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import es.upm.miw.practicaservicios.R;
 import es.upm.miw.practicaservicios.api.UsgsApiService;
-import es.upm.miw.practicaservicios.api.models.Feature;
-import es.upm.miw.practicaservicios.api.models.Properties;
 import es.upm.miw.practicaservicios.api.models.UsgsResponse;
 import es.upm.miw.practicaservicios.data.ConsultaInfo;
 import es.upm.miw.practicaservicios.data.ConsultaUsgs;
 import es.upm.miw.practicaservicios.data.Estadisticas;
 import es.upm.miw.practicaservicios.data.Sismo;
+import es.upm.miw.practicaservicios.ui.viewmodel.ConsultaAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,13 +66,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     final static String LOG_TAG = "MiW";
-
     private static final String API_BASE_URL = "https://earthquake.usgs.gov/";
 
     private static final int LIMIT_API = 500;     // máximo de eventos que pedimos a USGS
     private static final int MAX_SISMOS = 100;    // máximo de sismos que guardamos en la lista
 
     private UsgsApiService api;
+
+    private ConsultaAdapter adapter;
+    private TextView tvEmpty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,20 +84,25 @@ public class MainActivity extends AppCompatActivity {
 
         estableceInserciones();
 
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ConsultaAdapter(this);
+        recyclerView.setAdapter(adapter);
+        tvEmpty = findViewById(R.id.tvEmpty);
+        tvEmpty.setVisibility(View.VISIBLE);
+
         launchSignIn();
     }
 
     private void launchSignIn(){
         // Choose Firebase Authentication providers
         List<AuthUI.IdpConfig> authProviders = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.AnonymousBuilder().build()
         );
 
         AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
                 .Builder(R.layout.auth_custom_layout)
-                .setGoogleButtonId(R.id.btn_google)
                 .setEmailButtonId(R.id.btn_email)
                 .setAnonymousButtonId(R.id.btn_anonymous)
                 .build();
@@ -136,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, name, email));
 
                 guardarConsultaUltimaHora(user);
+                cargarHistorial(user);
             }
         } else {
             // Sign in failed. If IdentityProvider_response is null the user canceled the
@@ -149,6 +159,26 @@ public class MainActivity extends AppCompatActivity {
             }
             finish();
         }
+    }
+
+    private void cargarHistorial(FirebaseUser user) {
+        FirebaseFirestore.getInstance()
+                .collection("users").document(user.getUid())
+                .collection("consultas")
+                .orderBy("info.fechaConsulta", Query.Direction.DESCENDING)
+                .limit(20)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<ConsultaUsgs> consultas = snapshot.toObjects(
+                            ConsultaUsgs.class, DocumentSnapshot.ServerTimestampBehavior.ESTIMATE);
+                    adapter.setConsultas(consultas);
+                    tvEmpty.setVisibility(consultas.isEmpty() ? View.VISIBLE : View.GONE);
+                    Log.i(LOG_TAG, "Historial cargado: " + consultas.size() + " consultas");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(LOG_TAG, "Error al leer el historial", e);
+                    tvEmpty.setVisibility(View.VISIBLE);
+                });
     }
     private void guardarConsultaUltimaHora(FirebaseUser user) {
         // Periodo: última hora, en UTC (USGS interpreta las fechas sin zona como UTC)

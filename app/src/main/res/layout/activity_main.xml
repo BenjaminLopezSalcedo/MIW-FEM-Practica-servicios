@@ -6,14 +6,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.activities.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
+        tools:layout_editor_absoluteY="1dp"
+        android:paddingTop="12dp">
 
         <TextView
             android:id="@+id/textView"
@@ -35,12 +36,14 @@
             android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:padding="12dp"
-            android:background="@color/material_earth_100">>
+            android:background="@color/material_earth_100">
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingVertical="12dp"
+                android:background="@color/material_earth_200">
 
                 <TextView
                     android:text="@string/colLocalization"
@@ -101,8 +104,19 @@
 
             </FrameLayout>
         </LinearLayout>
-
     </LinearLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddQuery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:contentDescription="@string/contentDescAddQuery"
+        app:backgroundTint="@color/material_earth_500"
+        app:tint="@color/white"
+        app:srcCompat="@drawable/search_24"
+        app:maxImageSize="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

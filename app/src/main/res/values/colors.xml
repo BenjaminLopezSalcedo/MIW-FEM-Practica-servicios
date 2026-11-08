@@ -11,6 +11,7 @@
 
     <color name="material_earth_50">#F5ECE0</color>
     <color name="material_earth_100">#DCA782</color>
+    <color name="material_earth_200">#C7906B</color>
     <color name="material_earth_500">#A0693F</color>
     <color name="material_earth_700">#7A4A2A</color>
     <color name="material_purple_a700">#AA00FF</color>
