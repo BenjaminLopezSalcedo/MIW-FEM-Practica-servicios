@@ -6,6 +6,8 @@
     <string name="signed_cancelled">Inicio de sesión cancelado</string>
     <string name="txtLogout_button">Cerrar sesión</string>
     <string name="firebase_user_fmt">Usuario de Firebase: %s (%s)</string>
+    <string name="welcome_user_fmt">¡Bienvenido, %s!</string>
+    <string name="welcome_guest">¡Bienvenido, invitado!</string>
     <string name="default_web_client_id" translatable="false">webClientId.apps.googleusercontent.com</string>
     <string name="txtDeleteUser_button">Borrar usuario</string>
     <string name="login_title">Inicia sesión</string>
@@ -31,4 +33,15 @@
     <string name="colDepth">Prof.</string>
     <string name="colTime">Hora</string>
     <string name="txtNoEarthquakes">No hay sismos en esta consulta</string>
+    <string name="detail_total_fmt">Sismos: %1$d</string>
+    <string name="detail_saved_fmt">(guardados: %1$d)</string>
+    <string name="detail_max_mag_fmt">Magnitud máx.: %1$s</string>
+    <string name="detail_ranges_title">Rangos de magnitud</string>
+    <string name="query_error_detail">No se pudo cargar la consulta</string>
+    <string name="dialog_delete_user_title">Eliminar cuenta</string>
+    <string name="dialog_delete_user_message">Se borrará tu cuenta de forma permanente. ¿Continuar?</string>
+    <string name="dialog_delete_user_confirm">Eliminar</string>
+    <string name="welcome_subtitle">Este es tu historial de consulta de sismos</string>
+    <string name="title_main">Historial de sismos</string>
+    <string name="details_screen">Detalles de consulta</string>
 </resources>

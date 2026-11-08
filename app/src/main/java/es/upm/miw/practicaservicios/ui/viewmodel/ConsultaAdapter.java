@@ -24,6 +24,16 @@ public class ConsultaAdapter extends RecyclerView.Adapter<ConsultaAdapter.Consul
     private final LayoutInflater inflater;
     private List<ConsultaUsgs> consultas = new ArrayList<>();
 
+    public interface OnConsultaClickListener {
+        void onClick(ConsultaUsgs consulta);
+    }
+
+    private OnConsultaClickListener listener;
+
+    public void setOnConsultaClickListener(OnConsultaClickListener listener) {
+        this.listener = listener;
+    }
+
     private static final SimpleDateFormat FMT =
             new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
@@ -68,6 +78,10 @@ public class ConsultaAdapter extends RecyclerView.Adapter<ConsultaAdapter.Consul
         holder.tvFecha.setText(info != null && info.getFechaConsulta() != null
                 ? FMT.format(info.getFechaConsulta())
                 : "-");
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onClick(c);
+        });
     }
 
     public void setConsultas(List<ConsultaUsgs> consultas) {

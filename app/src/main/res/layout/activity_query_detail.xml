@@ -1,175 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:padding="16dp">
-
-
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:background="@drawable/bg_rounded_rectangle_earth500">
-        <TextView
-            android:id="@+id/tvDetailHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:background="@drawable/bg_rounded_rectangle_earth500"
-            android:backgroundTint="@color/material_earth_100"
-            tools:text="Global · 08/11/2026 12:30" />
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/tvDetailTotalEarthquakes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/white"
-                    tools:text="Sismos: 14" />
-                <TextView
-                    android:id="@+id/tvDetailSavedEarthquakes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/white"
-                    tools:text="(guardados: 14)" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/tvDetailMaxMagnitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAlignment="textEnd"
-
-                    android:textColor="@color/white"
-                    tools:text="Magnitud máx.: 5.2" />
-                <TextView
-                    android:id="@+id/tvDetailMaxMagnitudeLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAlignment="textEnd"
-                    android:textColor="@color/white"
-                    tools:text="LocalizaciónMaxMag" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvDetailRangesTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/white"
-            tools:text="Rangos" />
-
-        <TextView
-            android:id="@+id/tvDetailRanges"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            tools:text="micro: 3 · menor: 8 · ligero: 2 · Moderado: 2 · Fuerte: 2" />
-    </LinearLayout>
-
-
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/bg_rounded_rectangle_earth500"
-        android:backgroundTint="@color/material_earth_100">
+        android:padding="16dp">
 
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
+            android:padding="12dp"
             android:background="@drawable/bg_rounded_rectangle_earth500">
-
             <TextView
-                android:text="@string/colMag"
-                android:layout_width="0dp"
+                android:id="@+id/tvDetailHeader"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textStyle="bold" />
+                android:padding="5dp"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:background="@drawable/bg_rounded_rectangle_earth500"
+                android:backgroundTint="@color/material_earth_100"
+                tools:text="Global · 08/11/2026 12:30" />
 
-            <TextView
-                android:text="@string/colPlace"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:gravity="center"
-                android:textStyle="bold" />
 
-            <TextView
-                android:text="@string/colDepth"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:textStyle="bold" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:text="@string/colTime"
-                android:layout_width="0dp"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tvDetailTotalEarthquakes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/white"
+                        tools:text="Sismos: 14" />
+                    <TextView
+                        android:id="@+id/tvDetailSavedEarthquakes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/white"
+                        tools:text="(guardados: 14)" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tvDetailMaxMagnitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAlignment="textEnd"
+
+                        android:textColor="@color/white"
+                        tools:text="Magnitud máx.: 5.2" />
+                    <TextView
+                        android:id="@+id/tvDetailMaxMagnitudeLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        tools:text="LocalizaciónMaxMag" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:textStyle="bold" />
+                android:layout_marginTop="4dp"
+                android:padding="8dp"
+                android:background="@drawable/bg_rounded_rectangle_earth500"
+                android:backgroundTint="@color/material_earth_700">
+
+                <TextView
+                    android:id="@+id/tvDetailRangesTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    tools:text="Rangos" />
+
+                <TextView
+                    android:id="@+id/tvDetailRanges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    tools:text="micro: 3 · menor: 8 · ligero: 2 · Moderado: 2 · Fuerte: 2" />
+            </LinearLayout>
+
         </LinearLayout>
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="8dp">
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_rounded_rectangle_earth500"
+            android:backgroundTint="@color/material_earth_100">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerEarthquake"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/recyclerview_item_earthquake"/>
-
-            <TextView
-                android:id="@+id/tvNoEarthquake"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/txtNoEarthquakes"
-                android:visibility="gone" />
-        </FrameLayout>
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:background="@drawable/bg_rounded_rectangle_earth500">
+
+                <TextView
+                    android:text="@string/colMag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:text="@string/colPlace"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:text="@string/colDepth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:text="@string/colTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="8dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerEarthquake"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:listitem="@layout/recyclerview_item_earthquake"/>
+
+                <TextView
+                    android:id="@+id/tvNoEarthquake"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/txtNoEarthquakes"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -57,6 +56,7 @@ import es.upm.miw.practicaservicios.data.ConsultaInfo;
 import es.upm.miw.practicaservicios.data.ConsultaUsgs;
 import es.upm.miw.practicaservicios.data.Estadisticas;
 import es.upm.miw.practicaservicios.data.Sismo;
+import es.upm.miw.practicaservicios.ui.fragments.DeleteUserAlertDialog;
 import es.upm.miw.practicaservicios.ui.viewmodel.ConsultaAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,8 +64,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity
+        implements DeleteUserAlertDialog.OnDeleteUserConfirmedListener {
     final static String LOG_TAG = "MiW";
     private static final String API_BASE_URL = "https://earthquake.usgs.gov/";
 
@@ -94,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
         tvEmpty = findViewById(R.id.tvEmpty);
         tvEmpty.setVisibility(View.VISIBLE);
 
+        adapter.setOnConsultaClickListener(c -> {
+            Intent intent = new Intent(this, DetalleConsultaActivity.class);
+            intent.putExtra(DetalleConsultaActivity.EXTRA_CONSULTA_ID, c.getId());
+            startActivity(intent);
+        });
+
         fab = findViewById(R.id.fabAddQuery);
         fab.setOnClickListener(v -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -102,7 +108,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        launchSignIn();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            ((TextView) findViewById(R.id.textView)).setText(
+                    (user.getDisplayName()!=null &&
+                        !user.getDisplayName().trim().isEmpty() &&
+                        !user.isAnonymous())
+                            ? getString(R.string.welcome_user_fmt, user.getDisplayName())
+                            : getString(R.string.welcome_guest)
+            );
+            cargarHistorial(user);
+        } else if (savedInstanceState == null) {
+            launchSignIn();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.opcLogout) {
+            logout();
+            return true;
+        } else if (id == R.id.opcDeleteUser) {
+            new DeleteUserAlertDialog().show(getSupportFragmentManager(), "deleteUserDialog");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDeleteUserConfirmed() {
+        deleteUser();
     }
 
     private void launchSignIn(){
@@ -153,7 +195,9 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(MainActivity.this, getString(R.string.firebase_user_fmt, name, email), Toast.LENGTH_LONG).show();
                 Log.i(LOG_TAG, "onSignInResult() " + getString(R.string.firebase_user_fmt, name, email));
-                ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, name, email));
+                if(name != null){
+                    ((TextView) findViewById(R.id.textView)).setText(getString(R.string.welcome_user_fmt, name));
+                }else ((TextView) findViewById(R.id.textView)).setText(getString(R.string.welcome_guest));
 
                 cargarHistorial(user);
             }
@@ -267,25 +311,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.user_options_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.opcLogout) {
-            logout();
-            return true;
-        } else if (id == R.id.opcDeleteUser) {
-            confirmDeleteUser();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void logout() {
         Log.w(LOG_TAG, getString(R.string.signed_out));
         AuthUI.getInstance()
@@ -298,15 +323,7 @@ public class MainActivity extends AppCompatActivity {
         launchSignIn();
     }
 
-    private void confirmDeleteUser() {
-        new AlertDialog.Builder(this)
-                .setTitle("Eliminar cuenta")
-                .setMessage("Se borrará tu cuenta de forma permanente. ¿Continuar?")
-                .setPositiveButton("Eliminar", (dialog, which) -> deleteUser())
-                .setNegativeButton("Cancelar", null)
-                .show();
-    }
-    public void deleteUser() {
+    private void deleteUser() {
         Log.w(LOG_TAG, getString(R.string.deleted_user));
         AuthUI.getInstance()
                 .delete(this)
