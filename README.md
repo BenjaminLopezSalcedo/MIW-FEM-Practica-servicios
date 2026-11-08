@@ -27,7 +27,9 @@ Aplicación que consulta los sismos publicados por el USGS y mantiene un histori
     - Se guarda lo que el usuario vio en ese momento, porque USGS revisa sus datos con el tiempo.
     - Reglas de seguridad: cada usuario solo accede a sus propios datos.
 
-- **Historial y detalle**: la pantalla principal lista las últimas consultas; al pulsar una se abre el detalle con el resumen y la lista de sismos, leídos de Firestore sin volver a llamar a la API.
+- **Historial y detalle**:
+    - La pantalla principal lista las últimas consultas; al pulsar una se abre el detalle con el resumen y la lista de sismos, leídos de Firestore sin volver a llamar a la API.
+    - El detalle de la consulta tiene un diseño específico para orientación horizontal.
 
 ## Estructura almacenada en Cloud Firestore
 
