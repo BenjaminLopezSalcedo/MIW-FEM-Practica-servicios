@@ -13,4 +13,9 @@
     <string name="login_email">Iniciar sesión con email</string>
     <string name="login_guest">Continuar como invitado</string>
     <string name="deleted_user">Usuario borrado correctamente!</string>
+    <string name="range_micro">micro</string>
+    <string name="range_minor">menor</string>
+    <string name="range_light">ligero</string>
+    <string name="range_moderate">moderado</string>
+    <string name="range_strong">fuerte</string>
 </resources>

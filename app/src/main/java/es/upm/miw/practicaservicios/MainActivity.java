@@ -1,5 +1,9 @@
 package es.upm.miw.practicaservicios;
 
+import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extraerEstadisticas;
+import static es.upm.miw.practicaservicios.domain.logic.ConvertidorConsulta.extraerSismos;
+
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -32,13 +36,25 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import es.upm.miw.practicaservicios.api.UsgsApiService;
+import es.upm.miw.practicaservicios.api.models.Feature;
+import es.upm.miw.practicaservicios.api.models.Properties;
 import es.upm.miw.practicaservicios.api.models.UsgsResponse;
+import es.upm.miw.practicaservicios.data.ConsultaInfo;
+import es.upm.miw.practicaservicios.data.ConsultaUsgs;
+import es.upm.miw.practicaservicios.data.Estadisticas;
+import es.upm.miw.practicaservicios.data.Sismo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
     final static String LOG_TAG = "MiW";
 
     private static final String API_BASE_URL = "https://earthquake.usgs.gov/";
+
+    private static final int LIMIT_API = 500;     // máximo de eventos que pedimos a USGS
+    private static final int MAX_SISMOS = 100;    // máximo de sismos que guardamos en la lista
 
     private UsgsApiService api;
 
@@ -116,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "onSignInResult() " + getString(R.string.firebase_user_fmt, name, email));
                 ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, name, email));
 
+                /*
                 //Test Firestore
 
                 Map<String, Object> test = new HashMap<>();
@@ -154,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(LOG_TAG, "Error de red: " + t.getMessage());
                     }
                 });
+                 */
+                guardarConsultaUltimaHora(user);
             }
         } else {
             // Sign in failed. If IdentityProvider_response is null the user canceled the
@@ -167,6 +189,70 @@ public class MainActivity extends AppCompatActivity {
             }
             finish();
         }
+    }
+    private void guardarConsultaUltimaHora(FirebaseUser user) {
+        // Periodo: última hora, en UTC (USGS interpreta las fechas sin zona como UTC)
+        DateTimeFormatter fmt = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
+        Instant ahora = Instant.now();
+        final String desde = fmt.format(ahora.minus(1, ChronoUnit.HOURS));
+        final String hasta = fmt.format(ahora);
+        final Context ctx = getApplicationContext();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        UsgsApiService api = retrofit.create(UsgsApiService.class);
+
+        Call<UsgsResponse> call_async = api.getEarthquakes(
+                "geojson", desde, hasta, null, null, null, null, "time", LIMIT_API);
+
+        call_async.enqueue(new Callback<UsgsResponse>() {
+            @Override
+            public void onResponse(Call<UsgsResponse> call, Response<UsgsResponse> response) {
+                UsgsResponse usgsResponse = response.body();
+                if (usgsResponse == null) {
+                    Log.w(LOG_TAG, "Respuesta no válida: " + response.code());
+                    return;
+                }
+
+                // 1) Convertir cada evento a Sismo y acumular datos para el resumen
+                List<Sismo> todos = extraerSismos(usgsResponse);
+                Estadisticas estadisticas = extraerEstadisticas(ctx,todos);
+                estadisticas.setTruncado(usgsResponse.getFeatures().size() >= LIMIT_API);
+
+                todos.sort((a, b) -> Double.compare(b.getMag(), a.getMag()));
+                List<Sismo> guardar = todos.size() > MAX_SISMOS
+                        ? new ArrayList<>(todos.subList(0, MAX_SISMOS)) : todos;
+                estadisticas.setGuardados(guardar.size());
+
+                ConsultaInfo info = new ConsultaInfo();
+                info.setZonaNombre("Global");
+                info.setArea(null);
+                info.setFechaInicio(desde);
+                info.setFechaFin(hasta);
+                info.setMagMin(null);
+
+                ConsultaUsgs consulta = new ConsultaUsgs();
+                consulta.setInfo(info);
+                consulta.setSismos(guardar);
+                consulta.setEstadisticas(estadisticas);
+
+                FirebaseFirestore.getInstance()
+                        .collection("users").document(user.getUid())
+                        .collection("consultas").add(consulta)
+                        .addOnSuccessListener(ref ->
+                                Log.i(LOG_TAG, "Consulta guardada: " + ref.getId()
+                                        + " (total=" + estadisticas.getNumTotalSismos() + ")"))
+                        .addOnFailureListener(e -> Log.e(LOG_TAG, "Error al guardar", e));
+            }
+
+            @Override
+            public void onFailure(Call<UsgsResponse> call, Throwable t) {
+                Log.e(LOG_TAG, "Error de red: " + t.getMessage());
+            }
+        });
     }
 
     @Override
