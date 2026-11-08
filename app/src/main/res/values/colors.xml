@@ -4,14 +4,15 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#D5F3D5</color>
+    <color name="colorPrimaryDark">#E8D5C0</color>
     <color name="colorPrimaryVariant">#CD9BAA</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="statusBarColor">#8DD5C9</color>
+    <color name="statusBarColor">#C9A27E</color>
 
-    <color name="material_green_50">#E8F5E9</color>
-    <color name="material_green_500">#4CAF50</color>
-    <color name="material_green_700">#388E3C</color>
+    <color name="material_earth_50">#F5ECE0</color>
+    <color name="material_earth_100">#DCA782</color>
+    <color name="material_earth_500">#A0693F</color>
+    <color name="material_earth_700">#7A4A2A</color>
     <color name="material_purple_a700">#AA00FF</color>
     <color name="material_text_grey">#4D4D4D</color>
     <color name="material_red">#D0021B</color>

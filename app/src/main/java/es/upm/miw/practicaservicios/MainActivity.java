@@ -135,46 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "onSignInResult() " + getString(R.string.firebase_user_fmt, name, email));
                 ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, name, email));
 
-                /*
-                //Test Firestore
-
-                Map<String, Object> test = new HashMap<>();
-                test.put("mensaje", "hola");
-                test.put("fecha", com.google.firebase.Timestamp.now());
-
-                FirebaseFirestore.getInstance()
-                        .collection("users").document(user.getUid())
-                        .collection("pruebas").add(test)
-                        .addOnSuccessListener(ref -> Log.i(LOG_TAG, "Firestore OK: " + ref.getId()))
-                        .addOnFailureListener(e -> Log.e(LOG_TAG, "Firestore ERROR", e));
-
-                //Test retrofit
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(API_BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                api = retrofit.create(UsgsApiService.class);
-
-                Call<UsgsResponse> call_async = api.getEarthquakes("geojson", "2026-11-01", "2026-11-07",
-                                4.0, 36.2, 138.2, 500.0, "time", 500);
-
-                call_async.enqueue(new Callback<UsgsResponse>() {
-                    @Override
-                    public void onResponse(Call<UsgsResponse> call, Response<UsgsResponse> response) {
-                        UsgsResponse usgsResponse =response.body();
-                        if (usgsResponse != null) {
-                            Log.i(LOG_TAG, "Eventos recibidos: " + usgsResponse.getFeatures().size());
-                        }else{
-                            Log.w(LOG_TAG, "Respuesta no válida: " + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<UsgsResponse> call, Throwable t) {
-                        Log.e(LOG_TAG, "Error de red: " + t.getMessage());
-                    }
-                });
-                 */
                 guardarConsultaUltimaHora(user);
             }
         } else {

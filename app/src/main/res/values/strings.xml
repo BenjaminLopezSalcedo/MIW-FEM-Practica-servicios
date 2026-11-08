@@ -18,4 +18,9 @@
     <string name="range_light">ligero</string>
     <string name="range_moderate">moderado</string>
     <string name="range_strong">fuerte</string>
+    <string name="colQueryDate">Fecha</string>
+    <string name="colMaxMagnitude">Max mag</string>
+    <string name="colTotalEarthquakes">Nº Sismos</string>
+    <string name="colLocalization">Localización</string>
+    <string name="txtEmptyHistory">No se han realizado busquedas todavía</string>
 </resources>
