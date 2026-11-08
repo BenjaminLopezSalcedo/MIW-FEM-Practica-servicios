@@ -35,15 +35,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="20dp"
-            android:padding="12dp"
-            android:background="@color/material_earth_100">
+            android:background="@drawable/bg_rounded_rectangle_earth500"
+            android:backgroundTint="@color/material_earth_100">
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp"
-                android:background="@color/material_earth_200">
+                android:background="@drawable/bg_rounded_rectangle_earth500">
 
                 <TextView
                     android:text="@string/colLocalization"
@@ -51,7 +51,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:gravity="center"
-                    android:textColor="@color/material_earth_700"
                     android:textStyle="bold" />
 
                 <TextView
@@ -60,7 +59,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:gravity="center"
-                    android:textColor="@color/material_earth_700"
                     android:textStyle="bold" />
 
                 <TextView
@@ -69,7 +67,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:gravity="center"
-                    android:textColor="@color/material_earth_700"
                     android:textStyle="bold" />
 
                 <TextView
@@ -78,7 +75,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:gravity="center"
-                    android:textColor="@color/material_earth_700"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -92,6 +88,7 @@
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:padding="12dp"
                     tools:listitem="@layout/recyclerview_item_query_history" />
 
                 <TextView

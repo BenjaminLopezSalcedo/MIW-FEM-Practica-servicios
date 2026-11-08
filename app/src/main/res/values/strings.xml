@@ -26,4 +26,9 @@
     <string name="contentDescAddQuery">Añadir consulta</string>
     <string name="query_saved">Consulta guardada</string>
     <string name="query_error">No se pudo completar la consulta</string>
+    <string name="colMag">Mag.</string>
+    <string name="colPlace">Lugar</string>
+    <string name="colDepth">Prof.</string>
+    <string name="colTime">Hora</string>
+    <string name="txtNoEarthquakes">No hay sismos en esta consulta</string>
 </resources>
