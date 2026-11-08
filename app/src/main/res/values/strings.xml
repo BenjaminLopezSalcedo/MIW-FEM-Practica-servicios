@@ -24,4 +24,6 @@
     <string name="colLocalization">Localización</string>
     <string name="txtEmptyHistory">No se han realizado busquedas todavía</string>
     <string name="contentDescAddQuery">Añadir consulta</string>
+    <string name="query_saved">Consulta guardada</string>
+    <string name="query_error">No se pudo completar la consulta</string>
 </resources>

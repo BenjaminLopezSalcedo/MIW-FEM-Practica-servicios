@@ -35,6 +35,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private ConsultaAdapter adapter;
     private TextView tvEmpty;
 
+    private FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +93,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         tvEmpty = findViewById(R.id.tvEmpty);
         tvEmpty.setVisibility(View.VISIBLE);
+
+        fab = findViewById(R.id.fabAddQuery);
+        fab.setOnClickListener(v -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                guardarConsultaUltimaHora(user);
+            }
+        });
 
         launchSignIn();
     }
@@ -144,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "onSignInResult() " + getString(R.string.firebase_user_fmt, name, email));
                 ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, name, email));
 
-                guardarConsultaUltimaHora(user);
                 cargarHistorial(user);
             }
         } else {
@@ -181,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
     private void guardarConsultaUltimaHora(FirebaseUser user) {
-        // Periodo: última hora, en UTC (USGS interpreta las fechas sin zona como UTC)
+        fab.setEnabled(false);
+
         DateTimeFormatter fmt = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
         Instant ahora = Instant.now();
@@ -204,10 +215,11 @@ public class MainActivity extends AppCompatActivity {
                 UsgsResponse usgsResponse = response.body();
                 if (usgsResponse == null) {
                     Log.w(LOG_TAG, "Respuesta no válida: " + response.code());
+                    Toast.makeText(MainActivity.this, R.string.query_error, Toast.LENGTH_SHORT).show();
+                    fab.setEnabled(true);
                     return;
                 }
 
-                // 1) Convertir cada evento a Sismo y acumular datos para el resumen
                 List<Sismo> todos = extraerSismos(usgsResponse);
                 Estadisticas estadisticas = extraerEstadisticas(ctx,todos);
                 estadisticas.setTruncado(usgsResponse.getFeatures().size() >= LIMIT_API);
@@ -232,15 +244,25 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseFirestore.getInstance()
                         .collection("users").document(user.getUid())
                         .collection("consultas").add(consulta)
-                        .addOnSuccessListener(ref ->
-                                Log.i(LOG_TAG, "Consulta guardada: " + ref.getId()
-                                        + " (total=" + estadisticas.getNumTotalSismos() + ")"))
-                        .addOnFailureListener(e -> Log.e(LOG_TAG, "Error al guardar", e));
+                        .addOnSuccessListener(ref -> {
+                            Log.i(LOG_TAG, "Consulta guardada: " + ref.getId()
+                                    + " (total=" + estadisticas.getNumTotalSismos() + ")");
+                            Toast.makeText(MainActivity.this, R.string.query_saved, Toast.LENGTH_SHORT).show();
+                            cargarHistorial(user);
+                            fab.setEnabled(true);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(LOG_TAG, "Error al guardar", e);
+                            Toast.makeText(MainActivity.this, R.string.query_error, Toast.LENGTH_SHORT).show();
+                            fab.setEnabled(true);
+                        });
             }
 
             @Override
             public void onFailure(Call<UsgsResponse> call, Throwable t) {
                 Log.e(LOG_TAG, "Error de red: " + t.getMessage());
+                Toast.makeText(MainActivity.this, R.string.query_error, Toast.LENGTH_SHORT).show();
+                fab.setEnabled(true);
             }
         });
     }
